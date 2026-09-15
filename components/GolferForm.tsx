@@ -7,6 +7,8 @@ import { SKILLS, SKILL_LABELS, type Skill } from "@/lib/schema";
 
 const DEFAULT_RATING = 5;
 
+type Phase = "form" | "generating" | "choosing" | "saving";
+
 export function GolferForm() {
   const router = useRouter();
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -14,7 +16,9 @@ export function GolferForm() {
   const [ratings, setRatings] = useState<Record<Skill, number>>(() =>
     Object.fromEntries(SKILLS.map((skill) => [skill, DEFAULT_RATING])) as Record<Skill, number>
   );
-  const [submitting, setSubmitting] = useState(false);
+  const [phase, setPhase] = useState<Phase>("form");
+  const [avatarOptions, setAvatarOptions] = useState<string[]>([]);
+  const [pendingFields, setPendingFields] = useState<Record<string, string> | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   function handlePhotoChange(event: ChangeEvent<HTMLInputElement>) {
@@ -23,14 +27,14 @@ export function GolferForm() {
     setPhotoPreview(file ? URL.createObjectURL(file) : null);
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleGenerate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!photoFile) {
       setError("Add a photo first");
       return;
     }
 
-    setSubmitting(true);
+    setPhase("generating");
     setError(null);
 
     // Captured before the first await — React nulls out event.currentTarget
@@ -42,7 +46,42 @@ export function GolferForm() {
       const form = new FormData(formEl);
       form.set("photo", resizedPhoto);
 
-      const response = await fetch("/api/golfers", { method: "POST", body: form });
+      const fields: Record<string, string> = {};
+      for (const [key, value] of form.entries()) {
+        if (key !== "photo" && typeof value === "string") fields[key] = value;
+      }
+      setPendingFields(fields);
+
+      const genForm = new FormData();
+      genForm.set("photo", resizedPhoto);
+      genForm.set("favoriteColor", fields.favoriteColor ?? "");
+
+      const response = await fetch("/api/golfers/generate", { method: "POST", body: genForm });
+      const body = await response.json();
+
+      if (!response.ok) {
+        throw new Error(body.error ?? "Something went wrong");
+      }
+
+      setAvatarOptions(body.avatars);
+      setPhase("choosing");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+      setPhase("form");
+    }
+  }
+
+  async function handleChoose(avatarDataUrl: string) {
+    if (!pendingFields) return;
+    setPhase("saving");
+    setError(null);
+
+    try {
+      const response = await fetch("/api/golfers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...pendingFields, avatarDataUrl }),
+      });
       const body = await response.json();
 
       if (!response.ok) {
@@ -52,12 +91,48 @@ export function GolferForm() {
       router.push(`/golfer/${body.golfer.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
-      setSubmitting(false);
+      setPhase("choosing");
     }
   }
 
+  if (phase === "choosing" || phase === "saving") {
+    return (
+      <div>
+        <h2 className="mb-4 text-center font-pixel text-xs text-ink">Pick your avatar</h2>
+        <div className="grid grid-cols-3 gap-3">
+          {avatarOptions.map((src, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => handleChoose(src)}
+              disabled={phase === "saving"}
+              className="overflow-hidden rounded border-2 border-hairline transition hover:border-accent disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element -- data URL, not an optimizable remote src */}
+              <img
+                src={src}
+                alt={`Avatar option ${i + 1}`}
+                className="aspect-[3/4] w-full object-cover [image-rendering:pixelated]"
+              />
+            </button>
+          ))}
+        </div>
+        {phase === "saving" && (
+          <p className="mt-4 text-center text-xs text-ink-muted">Saving your card…</p>
+        )}
+        {error && (
+          <p role="alert" className="mt-4 text-center text-sm text-red-400">
+            {error}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  const submitting = phase === "generating";
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleGenerate} className="space-y-6">
       <div>
         <label className="mb-2 block text-xs text-ink-secondary" htmlFor="photo">
           Your photo
@@ -199,7 +274,7 @@ export function GolferForm() {
         disabled={submitting}
         className="w-full rounded bg-accent px-4 py-3 font-pixel text-[10px] text-ink transition hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {submitting ? "Generating your 8-bit avatar…" : "Create my stat card"}
+        {submitting ? "Generating your avatars…" : "Generate avatar options"}
       </button>
       {submitting && (
         <p className="text-center text-xs text-ink-muted">
