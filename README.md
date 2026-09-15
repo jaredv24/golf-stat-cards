@@ -33,6 +33,11 @@ second repo with the same name and collide.
    trigger it from the Deployments tab). That's the whole setup — no database
    to provision, no other config.
 
+**If you add or change an environment variable after the first deploy**,
+Vercel snapshots env vars per-deployment — an already-running deployment
+won't pick up the change. You need a new deployment (Deployments tab →
+latest → "⋯" → Redeploy, or just push a commit) *after* saving the variable.
+
 ## Local development
 
 1. `npm install`
