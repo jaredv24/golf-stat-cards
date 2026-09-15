@@ -10,7 +10,16 @@ function avatarPath(id: string) {
   return `golfers/${id}/avatar.png`;
 }
 
+function assertBlobConfigured() {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error(
+      "Storage isn't set up yet — attach Vercel Blob storage to this project (Storage tab → Create Database → Blob), then redeploy."
+    );
+  }
+}
+
 export async function saveGolfer(input: GolferInput, avatar: Buffer): Promise<GolferProfile> {
+  assertBlobConfigured();
   const id = nanoid(10);
 
   const avatarBlob = await put(avatarPath(id), avatar, {
@@ -34,6 +43,7 @@ export async function saveGolfer(input: GolferInput, avatar: Buffer): Promise<Go
 }
 
 export async function getGolfer(id: string): Promise<GolferProfile | null> {
+  assertBlobConfigured();
   const { blobs } = await list({ prefix: profilePath(id) });
   const match = blobs.find((b) => b.pathname === profilePath(id));
   if (!match) return null;

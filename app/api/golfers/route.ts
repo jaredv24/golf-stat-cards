@@ -46,16 +46,16 @@ export async function POST(request: Request) {
     );
   }
 
-  let avatar: Buffer;
+  let golfer;
   try {
     const photoBuffer = Buffer.from(await photo.arrayBuffer());
-    avatar = await generate8BitAvatar(photoBuffer, photo.type);
+    const avatar = await generate8BitAvatar(photoBuffer, photo.type);
+    golfer = await saveGolfer(parsed.data, avatar);
   } catch (err) {
-    console.error("Avatar generation failed", err);
-    const message = err instanceof Error ? err.message : "Avatar generation failed";
+    console.error("Failed to create golfer profile", err);
+    const message = err instanceof Error ? err.message : "Something went wrong";
     return NextResponse.json({ error: message }, { status: 502 });
   }
 
-  const golfer = await saveGolfer(parsed.data, avatar);
   return NextResponse.json({ golfer }, { status: 201 });
 }
