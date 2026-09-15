@@ -11,15 +11,6 @@ const BOTTOMS = [
   "olive golf shorts",
 ];
 
-const HEADWEAR = [
-  "a white golf cap",
-  "a navy golf visor",
-  "a flat driving cap",
-  "a bucket hat",
-  null,
-  null,
-];
-
 function pick<T>(options: readonly T[]): T {
   return options[Math.floor(Math.random() * options.length)];
 }
@@ -27,26 +18,26 @@ function pick<T>(options: readonly T[]): T {
 function buildOutfit(favoriteColor: string): string {
   const shirt = `a polo shirt in this exact color: ${favoriteColor}`;
   const bottom = pick(BOTTOMS);
-  const hat = pick(HEADWEAR);
-  return hat ? `${shirt}, ${bottom}, and ${hat}` : `${shirt} and ${bottom}`;
+  return `${shirt} and ${bottom}`;
 }
 
 function buildPrompt(favoriteColor: string): string {
   return [
     "Convert this photo into a retro 8-bit pixel art video game character",
     "portrait, waist-up and front-facing, like a classic sports game character",
-    "select screen from the NES/SNES era. Keep the face SIMPLE and iconic —",
-    "a handful of flat colors, basic blocky shapes, no realistic shading or",
-    "fine detail. Just capture the broad traits that make them recognizable",
-    "at a glance: hairstyle, hair color, face shape, skin tone, and a simple",
-    "expression. Don't try to render precise, detailed facial features.",
-    "Reflect their actual build if the photo shows their shoulders and",
-    "torso; if only their face is visible, give them a normal, average",
-    "build rather than guessing or exaggerating.",
+    "select screen. Aim for a moderate level of facial detail — not",
+    "photorealistic, but not overly flat or simplified either. Clearly",
+    "capture this specific person's face shape, hairstyle, and facial hair",
+    "style (beard, mustache, or clean-shaven — match the photo exactly),",
+    "along with their skin tone and expression, so they're recognizable.",
+    "No hat or headwear. Reflect their actual build if the photo shows",
+    "their shoulders and torso; if only their face is visible, give them a",
+    "normal, average build rather than guessing or exaggerating.",
     `Dress the character in typical golf attire: ${buildOutfit(favoriteColor)}.`,
-    "Chunky visible pixels, a limited nostalgic color palette, bold clean",
-    "outlines. Simple flat-color background (plain color or a soft green",
-    "fairway), no text, no watermark.",
+    "Chunky visible pixels, a limited nostalgic color palette like a",
+    "classic console sports game, bold clean outlines. Simple flat-color",
+    "background (plain color or a soft green fairway), no text, no",
+    "watermark.",
   ].join(" ");
 }
 
