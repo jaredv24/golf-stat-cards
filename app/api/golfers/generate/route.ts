@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { golferInputSchema } from "@/lib/schema";
-import { generate8BitAvatar } from "@/lib/openai-image";
+import { generate8BitAvatarOptions } from "@/lib/openai-image";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -37,10 +37,11 @@ export async function POST(request: Request) {
 
   try {
     const photoBuffer = Buffer.from(await photo.arrayBuffer());
-    const avatars = await Promise.all(
-      Array.from({ length: AVATAR_OPTION_COUNT }, () =>
-        generate8BitAvatar(photoBuffer, photo.type, colorCheck.data)
-      )
+    const avatars = await generate8BitAvatarOptions(
+      photoBuffer,
+      photo.type,
+      colorCheck.data,
+      AVATAR_OPTION_COUNT
     );
     const dataUrls = avatars.map((buf) => `data:image/png;base64,${buf.toString("base64")}`);
     return NextResponse.json({ avatars: dataUrls });

@@ -27,7 +27,12 @@ function buildPrompt(favoriteColor: string): string {
     "of Stardew Valley — full body, head to toe, standing and",
     "front-facing. Charming and stylized, not realistic or photographic:",
     "clean bold outlines, simple shapes, a warm color palette, visible",
-    "pixels.",
+    "pixels. Keep the rendering style, line weight, and shading approach",
+    "consistent and simple throughout — no mixing of flat cartoon shading",
+    "with realistic/painterly shading.",
+    "Eyes must be simple and clean: open, forward-facing, a small dot or",
+    "oval pupil on a visible eye shape. Not closed, not squinting, not",
+    "drawn as thick lashes or eyeliner.",
     "Clearly capture this specific person's face shape, hairstyle, and",
     "facial hair style (beard, mustache, or clean-shaven — match the photo",
     "exactly), along with their skin tone and expression, so they're",
@@ -50,11 +55,18 @@ function getClient(): OpenAI {
   return client;
 }
 
-export async function generate8BitAvatar(
+/**
+ * Generates `count` avatar variations in a single request (via the `n`
+ * param) rather than N independent calls — independent calls were drifting
+ * noticeably in rendering style/detail level from each other, since each
+ * one is an unrelated generation with no shared context.
+ */
+export async function generate8BitAvatarOptions(
   photo: Buffer,
   mimeType: string,
-  favoriteColor: string
-): Promise<Buffer> {
+  favoriteColor: string,
+  count: number
+): Promise<Buffer[]> {
   const openai = getClient();
   const file = await toFile(photo, "photo", { type: mimeType });
 
@@ -71,23 +83,27 @@ export async function generate8BitAvatar(
     // recognizable through an edit — worth it given this whole feature is a
     // likeness of the person.
     input_fidelity: "high",
+    n: count,
   });
 
-  const data = response.data?.[0];
-  if (!data) {
-    throw new Error("OpenAI did not return an image");
+  const items = response.data;
+  if (!items || items.length === 0) {
+    throw new Error("OpenAI did not return any images");
   }
 
-  if (data.b64_json) {
-    return Buffer.from(data.b64_json, "base64");
-  }
-  if (data.url) {
-    const res = await fetch(data.url);
-    if (!res.ok) {
-      throw new Error(`Failed to download generated image (${res.status})`);
-    }
-    return Buffer.from(await res.arrayBuffer());
-  }
-
-  throw new Error("OpenAI response had neither b64_json nor url");
+  return Promise.all(
+    items.map(async (data) => {
+      if (data.b64_json) {
+        return Buffer.from(data.b64_json, "base64");
+      }
+      if (data.url) {
+        const res = await fetch(data.url);
+        if (!res.ok) {
+          throw new Error(`Failed to download generated image (${res.status})`);
+        }
+        return Buffer.from(await res.arrayBuffer());
+      }
+      throw new Error("OpenAI response had neither b64_json nor url");
+    })
+  );
 }
