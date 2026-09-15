@@ -75,7 +75,10 @@ export async function generate8BitAvatarOptions(
   ]);
 
   const response = await openai.images.edit({
-    model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1",
+    // gpt-image-2.5-sunburst (released 2026-09-08) trades some speed for
+    // meaningfully more detail/instruction-following than gpt-image-1 —
+    // worth it here since likeness/detail quality is the whole feature.
+    model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-2.5-sunburst",
     image: [photoFile, styleReferenceFile],
     prompt: buildPrompt(favoriteColor),
     size: "1024x1024",
