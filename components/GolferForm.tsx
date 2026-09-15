@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { resizePhotoForUpload } from "@/lib/resize-photo";
 import { SKILLS, SKILL_LABELS, type Skill } from "@/lib/schema";
+import { POSE_KEYS, POSE_LABELS } from "@/lib/poses";
 
 const DEFAULT_RATING = 5;
 
@@ -55,6 +56,7 @@ export function GolferForm() {
       const genForm = new FormData();
       genForm.set("photo", resizedPhoto);
       genForm.set("favoriteColor", fields.favoriteColor ?? "");
+      genForm.set("pose", fields.pose ?? "random");
 
       const response = await fetch("/api/golfers/generate", { method: "POST", body: genForm });
       const body = await response.json();
@@ -220,6 +222,25 @@ export function GolferForm() {
           required
           className="h-10 w-20 cursor-pointer rounded border border-hairline bg-page p-1"
         />
+      </div>
+
+      <div>
+        <label className="mb-2 block text-xs text-ink-secondary" htmlFor="pose">
+          Pose
+        </label>
+        <select
+          id="pose"
+          name="pose"
+          defaultValue="random"
+          className="w-full rounded border border-hairline bg-page px-3 py-2 text-ink outline-none focus:border-accent"
+        >
+          <option value="random">Surprise me</option>
+          {POSE_KEYS.map((key) => (
+            <option key={key} value={key}>
+              {POSE_LABELS[key]}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>

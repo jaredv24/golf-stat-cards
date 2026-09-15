@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import OpenAI from "openai";
 import { toFile } from "openai/uploads";
+import { POSE_DESCRIPTIONS, POSE_KEYS, isPoseKey } from "./poses";
 
 const BOTTOMS = [
   "khaki golf pants",
@@ -11,13 +12,6 @@ const BOTTOMS = [
   "white golf shorts",
   "stone-colored golf pants",
   "olive golf shorts",
-];
-
-const POSES = [
-  "mid golf swing, club raised in a full swing follow-through",
-  "putting, crouched slightly over the ball on the green with a putter",
-  "reading the green, crouched down studying the line to the hole",
-  "looking for their ball, hand shielding their eyes, scanning the rough",
 ];
 
 const STYLE_REFERENCE_PATH = path.join(process.cwd(), "lib", "assets", "style-reference.png");
@@ -32,8 +26,13 @@ function buildOutfit(favoriteColor: string): string {
   return `${shirt} and ${bottom}`;
 }
 
-function buildPrompt(favoriteColor: string): string {
-  const pose = pick(POSES);
+function resolvePose(requestedPose?: string): string {
+  const key = isPoseKey(requestedPose) ? requestedPose : pick(POSE_KEYS);
+  return POSE_DESCRIPTIONS[key];
+}
+
+function buildPrompt(favoriteColor: string, requestedPose?: string): string {
+  const pose = resolvePose(requestedPose);
   return [
     "The first image is a photo of a real person. The second image is an",
     "art style reference. Create a full-body character illustration of",
@@ -75,7 +74,8 @@ export async function generate8BitAvatarOptions(
   photo: Buffer,
   mimeType: string,
   favoriteColor: string,
-  count: number
+  count: number,
+  pose?: string
 ): Promise<Buffer[]> {
   const openai = getClient();
   const [photoFile, styleReferenceFile] = await Promise.all([
@@ -89,7 +89,7 @@ export async function generate8BitAvatarOptions(
     // worth it here since likeness/detail quality is the whole feature.
     model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-2.5-sunburst",
     image: [photoFile, styleReferenceFile],
-    prompt: buildPrompt(favoriteColor),
+    prompt: buildPrompt(favoriteColor, pose),
     size: "1024x1024",
     // "low" keeps per-avatar cost minimal — this is a fun tournament keepsake,
     // not a print asset.

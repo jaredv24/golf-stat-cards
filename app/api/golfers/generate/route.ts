@@ -13,6 +13,7 @@ export async function POST(request: Request) {
   const formData = await request.formData();
   const photo = formData.get("photo");
   const favoriteColor = formData.get("favoriteColor");
+  const pose = formData.get("pose");
 
   if (!(photo instanceof File) || photo.size === 0) {
     return NextResponse.json({ error: "Photo is required" }, { status: 400 });
@@ -41,7 +42,8 @@ export async function POST(request: Request) {
       photoBuffer,
       photo.type,
       colorCheck.data,
-      AVATAR_OPTION_COUNT
+      AVATAR_OPTION_COUNT,
+      typeof pose === "string" ? pose : undefined
     );
     const dataUrls = avatars.map((buf) => `data:image/png;base64,${buf.toString("base64")}`);
     return NextResponse.json({ avatars: dataUrls });
