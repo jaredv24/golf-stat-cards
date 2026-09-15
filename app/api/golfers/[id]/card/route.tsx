@@ -5,10 +5,11 @@ import { SKILLS, SKILL_LABELS, overallRating } from "@/lib/schema";
 export const runtime = "nodejs";
 
 const WIDTH = 800;
-const HEIGHT = 1460;
+const HEIGHT = 1180;
 const PADDING = 32;
 const INNER = WIDTH - PADDING * 2;
-const AVATAR_HEIGHT = Math.round((INNER * 4) / 3);
+const AVATAR_WIDTH = Math.round((INNER * 2) / 3);
+const AVATAR_HEIGHT = Math.round((AVATAR_WIDTH * 4) / 3);
 
 const COLORS = {
   surface: "#1a1a19",
@@ -47,24 +48,26 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
           fontFamily: "sans-serif",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            width: INNER,
-            height: AVATAR_HEIGHT,
-            borderRadius: 10,
-            overflow: "hidden",
-            border: `4px solid ${COLORS.hairline}`,
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element -- Satori image element, not a browser <img> */}
-          <img
-            src={golfer.avatarUrl}
-            width={INNER}
-            height={AVATAR_HEIGHT}
-            alt=""
-            style={{ objectFit: "cover" }}
-          />
+        <div style={{ display: "flex", width: INNER, justifyContent: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              width: AVATAR_WIDTH,
+              height: AVATAR_HEIGHT,
+              borderRadius: 10,
+              overflow: "hidden",
+              border: `4px solid ${COLORS.hairline}`,
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element -- Satori image element, not a browser <img> */}
+            <img
+              src={golfer.avatarUrl}
+              width={AVATAR_WIDTH}
+              height={AVATAR_HEIGHT}
+              alt=""
+              style={{ objectFit: "cover" }}
+            />
+          </div>
         </div>
 
         <div

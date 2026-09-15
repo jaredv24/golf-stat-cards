@@ -6,12 +6,12 @@ export function StatCard({ golfer }: { golfer: GolferProfile }) {
 
   return (
     <div className="mx-auto w-full max-w-sm rounded-lg border-4 border-hairline bg-surface p-4 shadow-[6px_6px_0_0_rgba(0,0,0,0.4)]">
-      <div className="relative aspect-[3/4] w-full overflow-hidden rounded border-2 border-hairline">
+      <div className="relative mx-auto aspect-[3/4] w-2/3 overflow-hidden rounded border-2 border-hairline">
         <Image
           src={golfer.avatarUrl}
           alt={`${golfer.name}'s 8-bit avatar`}
           fill
-          sizes="384px"
+          sizes="256px"
           priority
           className="object-cover [image-rendering:pixelated]"
         />
