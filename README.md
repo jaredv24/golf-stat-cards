@@ -15,14 +15,19 @@ is a pixel-perfect PNG of the card exactly as rendered on screen.
 
 ## Go live
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/jaredv24/golf-stat-cards&env=OPENAI_API_KEY&envDescription=API%20key%20used%20to%20generate%20each%208-bit%20avatar&envLink=https://platform.openai.com/api-keys&project-name=golf-stat-cards&repository-name=golf-stat-cards)
+This repo already exists in your GitHub account, so import it directly —
+don't use a Vercel "clone/template" deploy button here, it'll try to create a
+second repo with the same name and collide.
 
-1. Click the button above (or import the repo manually in the Vercel dashboard).
-2. Paste in your `OPENAI_API_KEY` when prompted.
-3. Once the project exists: **Storage → Create Database → Blob**, connect it
+1. Go to [vercel.com/new](https://vercel.com/new), connect GitHub if prompted,
+   and **Import** `golf-stat-cards` from the repository list.
+2. On the configuration screen, expand **Environment Variables** and add
+   `OPENAI_API_KEY` with your key. Leave the build settings as detected.
+3. Click **Deploy**.
+4. Once the project exists: **Storage → Create Database → Blob**, connect it
    to the project. This sets `BLOB_READ_WRITE_TOKEN` automatically — nothing
    to copy by hand.
-4. Redeploy (Vercel does this automatically after you attach storage, or
+5. Redeploy (Vercel does this automatically after you attach storage, or
    trigger it from the Deployments tab). That's the whole setup — no database
    to provision, no other config.
 
