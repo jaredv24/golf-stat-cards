@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { ImageResponse } from "next/og";
 import { getGolfer } from "@/lib/store";
 import { SKILLS, SKILL_LABELS, overallRating } from "@/lib/schema";
@@ -10,6 +12,8 @@ const PADDING = 32;
 const INNER = WIDTH - PADDING * 2;
 const AVATAR_WIDTH = Math.round((INNER * 2) / 3);
 const AVATAR_HEIGHT = Math.round((AVATAR_WIDTH * 4) / 3);
+const FONT_FAMILY = "Press Start 2P";
+const FONT_PATH = path.join(process.cwd(), "lib", "assets", "press-start-2p.woff");
 
 const COLORS = {
   surface: "#1a1a19",
@@ -28,6 +32,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     return new Response("Not found", { status: 404 });
   }
 
+  const fontData = await readFile(FONT_PATH);
   const ovr = overallRating(golfer);
   const bioItems = [
     { label: "Age", value: String(golfer.age) },
@@ -45,7 +50,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
           height: HEIGHT,
           background: COLORS.surface,
           padding: PADDING,
-          fontFamily: "sans-serif",
+          fontFamily: FONT_FAMILY,
         }}
       >
         <div style={{ display: "flex", width: INNER, justifyContent: "center" }}>
@@ -79,18 +84,18 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
             alignItems: "flex-start",
           }}
         >
-          <div style={{ display: "flex", fontSize: 34, fontWeight: 700, color: COLORS.ink }}>
+          <div style={{ display: "flex", fontSize: 24, color: COLORS.ink, lineHeight: 1.4 }}>
             {golfer.name}
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-            <div style={{ display: "flex", fontSize: 15, color: COLORS.inkMuted }}>OVR</div>
-            <div style={{ display: "flex", fontSize: 52, fontWeight: 800, color: COLORS.ink }}>
+            <div style={{ display: "flex", fontSize: 12, color: COLORS.inkMuted }}>OVR</div>
+            <div style={{ display: "flex", fontSize: 40, color: COLORS.ink, marginTop: 6 }}>
               {ovr}
             </div>
           </div>
         </div>
 
-        <div style={{ display: "flex", width: INNER, marginTop: 18, gap: 12 }}>
+        <div style={{ display: "flex", width: INNER, marginTop: 20, gap: 12 }}>
           {bioItems.map((item) => (
             <div
               key={item.label}
@@ -101,28 +106,20 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
                 flex: 1,
                 border: `2px solid ${COLORS.hairline}`,
                 borderRadius: 8,
-                padding: "12px 8px",
+                padding: "14px 8px",
               }}
             >
-              <div style={{ display: "flex", fontSize: 15, color: COLORS.inkSecondary }}>
+              <div style={{ display: "flex", fontSize: 11, color: COLORS.inkSecondary }}>
                 {item.label}
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  fontSize: 24,
-                  fontWeight: 700,
-                  color: COLORS.ink,
-                  marginTop: 6,
-                }}
-              >
+              <div style={{ display: "flex", fontSize: 18, color: COLORS.ink, marginTop: 10 }}>
                 {item.value}
               </div>
             </div>
           ))}
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", width: INNER, marginTop: 22 }}>
+        <div style={{ display: "flex", flexDirection: "column", width: INNER, marginTop: 24 }}>
           {SKILLS.map((skill) => (
             <div
               key={skill}
@@ -130,10 +127,18 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
                 display: "flex",
                 alignItems: "center",
                 gap: 14,
-                marginTop: 12,
+                marginTop: 16,
               }}
             >
-              <div style={{ display: "flex", width: 150, fontSize: 16, color: COLORS.inkSecondary }}>
+              <div
+                style={{
+                  display: "flex",
+                  width: 210,
+                  fontSize: 12,
+                  lineHeight: 1.4,
+                  color: COLORS.inkSecondary,
+                }}
+              >
                 {SKILL_LABELS[skill]}
               </div>
               <div
@@ -159,9 +164,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
               <div
                 style={{
                   display: "flex",
-                  width: 28,
+                  width: 24,
                   justifyContent: "flex-end",
-                  fontSize: 16,
+                  fontSize: 14,
                   color: COLORS.ink,
                 }}
               >
@@ -172,6 +177,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
         </div>
       </div>
     ),
-    { width: WIDTH, height: HEIGHT }
+    {
+      width: WIDTH,
+      height: HEIGHT,
+      fonts: [{ name: FONT_FAMILY, data: fontData, weight: 400, style: "normal" }],
+    }
   );
 }
