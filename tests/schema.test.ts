@@ -64,6 +64,7 @@ describe("golferInputSchema", () => {
     name: "Tiger W.",
     age: "34",
     height: "5'11\"",
+    favoriteColor: "#3987e5",
     handicap: "12.4",
     driving: "8",
     irons: "7",
@@ -81,7 +82,13 @@ describe("golferInputSchema", () => {
       expect(result.data.driving).toBe(8);
       expect(result.data.age).toBe(34);
       expect(result.data.height).toBe("5'11\"");
+      expect(result.data.favoriteColor).toBe("#3987e5");
     }
+  });
+
+  it("rejects a malformed favorite color", () => {
+    const result = golferInputSchema.safeParse({ ...validInput, favoriteColor: "blue" });
+    expect(result.success).toBe(false);
   });
 
   it("rejects a blank name", () => {

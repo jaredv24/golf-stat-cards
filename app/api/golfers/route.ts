@@ -30,6 +30,7 @@ export async function POST(request: Request) {
     name: formData.get("name"),
     age: formData.get("age"),
     height: formData.get("height"),
+    favoriteColor: formData.get("favoriteColor"),
     handicap: formData.get("handicap"),
     driving: formData.get("driving"),
     irons: formData.get("irons"),
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
   let golfer;
   try {
     const photoBuffer = Buffer.from(await photo.arrayBuffer());
-    const avatar = await generate8BitAvatar(photoBuffer, photo.type);
+    const avatar = await generate8BitAvatar(photoBuffer, photo.type, parsed.data.favoriteColor);
     golfer = await saveGolfer(parsed.data, avatar);
   } catch (err) {
     console.error("Failed to create golfer profile", err);

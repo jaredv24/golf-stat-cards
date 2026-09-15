@@ -1,18 +1,6 @@
 import OpenAI from "openai";
 import { toFile } from "openai/uploads";
 
-const SHIRTS = [
-  "a crisp white polo shirt",
-  "a navy blue polo shirt",
-  "a red polo shirt",
-  "a light blue polo shirt",
-  "a yellow polo shirt",
-  "a forest green polo shirt",
-  "a black polo shirt",
-  "a pink polo shirt",
-  "an orange polo shirt",
-];
-
 const BOTTOMS = [
   "khaki golf pants",
   "navy golf shorts",
@@ -36,24 +24,27 @@ function pick<T>(options: readonly T[]): T {
   return options[Math.floor(Math.random() * options.length)];
 }
 
-function randomOutfit(): string {
-  const shirt = pick(SHIRTS);
+function buildOutfit(favoriteColor: string): string {
+  const shirt = `a polo shirt in this exact color: ${favoriteColor}`;
   const bottom = pick(BOTTOMS);
   const hat = pick(HEADWEAR);
   return hat ? `${shirt}, ${bottom}, and ${hat}` : `${shirt} and ${bottom}`;
 }
 
-function buildPrompt(): string {
+function buildPrompt(favoriteColor: string): string {
   return [
     "Convert this photo into a retro 8-bit pixel art video game character",
     "portrait, waist-up and front-facing, like a classic sports game character",
-    "select screen. Base the character on this specific person's face and",
-    "general build/physique so they're recognizable — keep their hairstyle,",
-    "skin tone, approximate body shape, and expression.",
-    `Dress the character in typical golf attire: ${randomOutfit()}.`,
+    "select screen. This must be recognizably the same person: closely match",
+    "their face — eye shape, nose, jawline, eyebrows, hairstyle, skin tone,",
+    "and expression. Reflect their actual build if the photo shows their",
+    "shoulders and torso; if only their face is visible, give them a normal,",
+    "average build rather than guessing or exaggerating.",
+    `Dress the character in typical golf attire: ${buildOutfit(favoriteColor)}.`,
     "Chunky visible pixels, a limited nostalgic color palette like a 1990s",
-    "console sports game, bold clean outlines. Simple flat-color background",
-    "(plain color or a soft green fairway), no text, no watermark.",
+    "console sports game, bold clean outlines, but keep the facial features",
+    "clear and legible rather than over-simplified. Simple flat-color",
+    "background (plain color or a soft green fairway), no text, no watermark.",
   ].join(" ");
 }
 
@@ -67,18 +58,27 @@ function getClient(): OpenAI {
   return client;
 }
 
-export async function generate8BitAvatar(photo: Buffer, mimeType: string): Promise<Buffer> {
+export async function generate8BitAvatar(
+  photo: Buffer,
+  mimeType: string,
+  favoriteColor: string
+): Promise<Buffer> {
   const openai = getClient();
   const file = await toFile(photo, "photo", { type: mimeType });
 
   const response = await openai.images.edit({
     model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1",
     image: file,
-    prompt: buildPrompt(),
+    prompt: buildPrompt(favoriteColor),
     size: "1024x1024",
     // "low" keeps per-avatar cost minimal — this is a fun tournament keepsake,
     // not a print asset.
     quality: "low",
+    // Defaults to "low", which lets the model take real liberties with faces.
+    // "high" costs more tokens but is specifically meant to keep people
+    // recognizable through an edit — worth it given this whole feature is a
+    // likeness of the person.
+    input_fidelity: "high",
   });
 
   const data = response.data?.[0];

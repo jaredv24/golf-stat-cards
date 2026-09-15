@@ -26,6 +26,10 @@ export const golferInputSchema = z.object({
     .min(5, "Age looks too low")
     .max(100, "Age looks too high"),
   height: z.string().trim().min(1, "Height is required").max(20, "Height is too long"),
+  favoriteColor: z
+    .string()
+    .trim()
+    .regex(/^#[0-9a-fA-F]{6}$/, "Pick a valid color"),
   handicap: z.coerce
     .number()
     .min(-10, "Handicap looks too low")

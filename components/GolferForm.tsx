@@ -134,6 +134,20 @@ export function GolferForm() {
       </div>
 
       <div>
+        <label className="mb-2 block text-xs text-ink-secondary" htmlFor="favoriteColor">
+          Favorite color
+        </label>
+        <input
+          id="favoriteColor"
+          name="favoriteColor"
+          type="color"
+          defaultValue="#3987e5"
+          required
+          className="h-10 w-20 cursor-pointer rounded border border-hairline bg-page p-1"
+        />
+      </div>
+
+      <div>
         <label className="mb-2 block text-xs text-ink-secondary" htmlFor="handicap">
           Handicap
         </label>
