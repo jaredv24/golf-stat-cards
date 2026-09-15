@@ -13,6 +13,24 @@ function slugify(name: string): string {
   );
 }
 
+// html-to-image can snapshot before a remote image (the avatar, proxied
+// through /_next/image) has actually finished loading and decoding —
+// "loaded" and "safe to paint" aren't the same moment for an <img>.
+async function waitForImages(container: HTMLElement): Promise<void> {
+  const images = Array.from(container.querySelectorAll("img"));
+  await Promise.all(
+    images.map(async (img) => {
+      if (!img.complete) {
+        await new Promise<void>((resolve) => {
+          img.addEventListener("load", () => resolve(), { once: true });
+          img.addEventListener("error", () => resolve(), { once: true });
+        });
+      }
+      await img.decode?.().catch(() => {});
+    })
+  );
+}
+
 export function CardCapture({ name, children }: { name: string; children: ReactNode }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
@@ -24,7 +42,10 @@ export function CardCapture({ name, children }: { name: string; children: ReactN
     setError(null);
 
     try {
-      await document.fonts.ready.catch(() => {});
+      await Promise.all([
+        document.fonts.ready.catch(() => {}),
+        waitForImages(cardRef.current),
+      ]);
       const dataUrl = await toPng(cardRef.current, {
         pixelRatio: 2,
         cacheBust: true,
