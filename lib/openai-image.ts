@@ -35,16 +35,18 @@ function buildPrompt(favoriteColor: string): string {
   return [
     "Convert this photo into a retro 8-bit pixel art video game character",
     "portrait, waist-up and front-facing, like a classic sports game character",
-    "select screen. This must be recognizably the same person: closely match",
-    "their face — eye shape, nose, jawline, eyebrows, hairstyle, skin tone,",
-    "and expression. Reflect their actual build if the photo shows their",
-    "shoulders and torso; if only their face is visible, give them a normal,",
-    "average build rather than guessing or exaggerating.",
+    "select screen from the NES/SNES era. Keep the face SIMPLE and iconic —",
+    "a handful of flat colors, basic blocky shapes, no realistic shading or",
+    "fine detail. Just capture the broad traits that make them recognizable",
+    "at a glance: hairstyle, hair color, face shape, skin tone, and a simple",
+    "expression. Don't try to render precise, detailed facial features.",
+    "Reflect their actual build if the photo shows their shoulders and",
+    "torso; if only their face is visible, give them a normal, average",
+    "build rather than guessing or exaggerating.",
     `Dress the character in typical golf attire: ${buildOutfit(favoriteColor)}.`,
-    "Chunky visible pixels, a limited nostalgic color palette like a 1990s",
-    "console sports game, bold clean outlines, but keep the facial features",
-    "clear and legible rather than over-simplified. Simple flat-color",
-    "background (plain color or a soft green fairway), no text, no watermark.",
+    "Chunky visible pixels, a limited nostalgic color palette, bold clean",
+    "outlines. Simple flat-color background (plain color or a soft green",
+    "fairway), no text, no watermark.",
   ].join(" ");
 }
 
