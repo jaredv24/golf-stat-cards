@@ -13,6 +13,13 @@ const BOTTOMS = [
   "olive golf shorts",
 ];
 
+const POSES = [
+  "mid golf swing, club raised in a full swing follow-through",
+  "putting, crouched slightly over the ball on the green with a putter",
+  "reading the green, crouched down studying the line to the hole",
+  "looking for their ball, hand shielding their eyes, scanning the rough",
+];
+
 const STYLE_REFERENCE_PATH = path.join(process.cwd(), "lib", "assets", "style-reference.png");
 
 function pick<T>(options: readonly T[]): T {
@@ -26,14 +33,16 @@ function buildOutfit(favoriteColor: string): string {
 }
 
 function buildPrompt(favoriteColor: string): string {
+  const pose = pick(POSES);
   return [
     "The first image is a photo of a real person. The second image is an",
-    "art style reference. Create a full-body, front-facing, standing",
-    "character illustration of the person from the first image, matching",
-    "the rendering style of the second reference image as closely as",
-    "possible: clean anime/manga-style linework, soft cel shading, large",
-    "detailed expressive eyes with a clear iris and highlight, smooth hair",
+    "art style reference. Create a full-body character illustration of",
+    "the person from the first image, matching the rendering style of",
+    "the second reference image as closely as possible: clean",
+    "anime/manga-style linework, soft cel shading, large detailed",
+    "expressive eyes with a clear iris and highlight, smooth hair",
     "rendering with gradient shading.",
+    `Pose the character ${pose}, on a golf course.`,
     "Base the character's likeness on the first image: face shape,",
     "hairstyle, facial hair style (beard, mustache, or clean-shaven —",
     "match exactly), skin tone, and expression, so they're recognizable.",
