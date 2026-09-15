@@ -84,12 +84,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
             alignItems: "flex-start",
           }}
         >
-          <div style={{ display: "flex", fontSize: 24, color: COLORS.ink, lineHeight: 1.4 }}>
+          <div style={{ display: "flex", fontSize: 30, color: COLORS.ink, lineHeight: 1.4 }}>
             {golfer.name}
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-            <div style={{ display: "flex", fontSize: 12, color: COLORS.inkMuted }}>OVR</div>
-            <div style={{ display: "flex", fontSize: 40, color: COLORS.ink, marginTop: 6 }}>
+            <div style={{ display: "flex", fontSize: 14, color: COLORS.inkMuted }}>OVR</div>
+            <div style={{ display: "flex", fontSize: 46, color: COLORS.ink, marginTop: 8 }}>
               {ovr}
             </div>
           </div>
@@ -109,10 +109,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
                 padding: "14px 8px",
               }}
             >
-              <div style={{ display: "flex", fontSize: 11, color: COLORS.inkSecondary }}>
+              <div style={{ display: "flex", fontSize: 14, color: COLORS.inkSecondary }}>
                 {item.label}
               </div>
-              <div style={{ display: "flex", fontSize: 18, color: COLORS.ink, marginTop: 10 }}>
+              <div style={{ display: "flex", fontSize: 22, color: COLORS.ink, marginTop: 12 }}>
                 {item.value}
               </div>
             </div>
@@ -133,8 +133,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
               <div
                 style={{
                   display: "flex",
-                  width: 210,
-                  fontSize: 12,
+                  width: 260,
+                  fontSize: 15,
                   lineHeight: 1.4,
                   color: COLORS.inkSecondary,
                 }}
@@ -145,7 +145,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
                 style={{
                   display: "flex",
                   flex: 1,
-                  height: 14,
+                  height: 16,
                   borderRadius: 999,
                   background: COLORS.track,
                   overflow: "hidden",
@@ -164,9 +164,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
               <div
                 style={{
                   display: "flex",
-                  width: 24,
+                  width: 28,
                   justifyContent: "flex-end",
-                  fontSize: 14,
+                  fontSize: 16,
                   color: COLORS.ink,
                 }}
               >
