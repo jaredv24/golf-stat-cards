@@ -28,12 +28,15 @@ export async function POST(request: Request) {
 
   const parsed = golferInputSchema.safeParse({
     name: formData.get("name"),
+    age: formData.get("age"),
+    height: formData.get("height"),
     handicap: formData.get("handicap"),
     driving: formData.get("driving"),
     irons: formData.get("irons"),
     wedges: formData.get("wedges"),
     putting: formData.get("putting"),
     pressure: formData.get("pressure"),
+    strength: formData.get("strength"),
   });
 
   if (!parsed.success) {

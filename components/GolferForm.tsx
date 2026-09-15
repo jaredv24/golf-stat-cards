@@ -100,6 +100,39 @@ export function GolferForm() {
         />
       </div>
 
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="mb-2 block text-xs text-ink-secondary" htmlFor="age">
+            Age
+          </label>
+          <input
+            id="age"
+            name="age"
+            type="number"
+            min={5}
+            max={100}
+            step={1}
+            required
+            placeholder="34"
+            className="w-full rounded border border-hairline bg-page px-3 py-2 text-ink outline-none focus:border-accent"
+          />
+        </div>
+        <div>
+          <label className="mb-2 block text-xs text-ink-secondary" htmlFor="height">
+            Height
+          </label>
+          <input
+            id="height"
+            name="height"
+            type="text"
+            required
+            maxLength={20}
+            placeholder={`5'11"`}
+            className="w-full rounded border border-hairline bg-page px-3 py-2 text-ink outline-none focus:border-accent"
+          />
+        </div>
+      </div>
+
       <div>
         <label className="mb-2 block text-xs text-ink-secondary" htmlFor="handicap">
           Handicap

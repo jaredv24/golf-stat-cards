@@ -12,17 +12,17 @@ const pixelFont = Press_Start_2P({
 });
 
 export const metadata: Metadata = {
-  title: "8-Bit Golf Stats",
+  title: "US Bropen Profile Builder",
   description: "Upload a photo, get an 8-bit avatar, build your tournament stat card.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={pixelFont.variable}>
-      <body className="min-h-screen bg-page font-sans text-ink antialiased">
+      <body className="min-h-screen bg-page font-pixel text-ink antialiased">
         <header className="border-b border-hairline px-4 py-4">
           <Link href="/" className="font-pixel text-[10px] text-accent sm:text-xs">
-            8-BIT GOLF STATS
+            US BROPEN PROFILE BUILDER
           </Link>
         </header>
         <main className="px-4 py-8">{children}</main>

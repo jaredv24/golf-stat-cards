@@ -1,9 +1,11 @@
-# 8-Bit Golf Stats
+# US Bropen Profile Builder
 
 A simple tournament stat-card generator. A golfer uploads a photo, gets it
-turned into a retro 8-bit pixel-art avatar, enters their handicap and a few
-self-rated skills (driving, irons, wedges, putting, under pressure), and gets
-a stat card they can download straight to their phone's Photos app.
+turned into a retro 8-bit pixel-art avatar, enters their age, height,
+handicap, and self-rated skills (driving, irons, wedges, putting, under
+pressure, strength), and gets a stat card they can download straight to
+their phone's Photos app. The overall rating (OVR) averages all six skills
+together with a rating derived from handicap.
 
 ## Stack
 

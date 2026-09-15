@@ -25,15 +25,25 @@ export function StatCard({ golfer }: { golfer: GolferProfile }) {
         </div>
       </div>
 
-      <div className="mt-3 flex items-center justify-between rounded border border-hairline px-3 py-2">
-        <span className="text-sm text-ink-secondary">Handicap</span>
-        <span className="text-lg font-semibold tabular-nums text-ink">{golfer.handicap}</span>
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        <div className="rounded border border-hairline px-2 py-2 text-center">
+          <div className="text-[10px] text-ink-secondary">Age</div>
+          <div className="mt-1 text-lg font-semibold tabular-nums text-ink">{golfer.age}</div>
+        </div>
+        <div className="rounded border border-hairline px-2 py-2 text-center">
+          <div className="text-[10px] text-ink-secondary">Height</div>
+          <div className="mt-1 text-lg font-semibold text-ink">{golfer.height}</div>
+        </div>
+        <div className="rounded border border-hairline px-2 py-2 text-center">
+          <div className="text-[10px] text-ink-secondary">Handicap</div>
+          <div className="mt-1 text-lg font-semibold tabular-nums text-ink">{golfer.handicap}</div>
+        </div>
       </div>
 
       <div className="mt-4 space-y-2.5">
         {SKILLS.map((skill) => (
           <div key={skill} className="flex items-center gap-3">
-            <span className="w-28 shrink-0 text-xs text-ink-secondary">
+            <span className="w-24 shrink-0 text-[9px] leading-tight text-ink-secondary">
               {SKILL_LABELS[skill]}
             </span>
             <div className="h-3 flex-1 overflow-hidden rounded-full bg-track">
