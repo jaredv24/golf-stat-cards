@@ -85,11 +85,9 @@ export async function generate8BitAvatarOptions(
     // "low" keeps per-avatar cost minimal — this is a fun tournament keepsake,
     // not a print asset.
     quality: "low",
-    // Defaults to "low", which lets the model take real liberties with faces.
-    // "high" costs more tokens but is specifically meant to keep people
-    // recognizable through an edit — worth it given this whole feature is a
-    // likeness of the person.
-    input_fidelity: "high",
+    // input_fidelity isn't supported by gpt-image-2.5-sunburst (only the
+    // gpt-image-1 family) — likeness grounding here comes from the model
+    // itself plus the input photo/style reference.
     n: count,
   });
 
