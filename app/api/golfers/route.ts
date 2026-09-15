@@ -1,18 +1,13 @@
 import { NextResponse } from "next/server";
 import { golferInputSchema } from "@/lib/schema";
 import { generate8BitAvatar } from "@/lib/openai-image";
-import { saveGolfer, listGolfers } from "@/lib/store";
+import { saveGolfer } from "@/lib/store";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
 const ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
-
-export async function GET() {
-  const golfers = await listGolfers();
-  return NextResponse.json({ golfers });
-}
 
 export async function POST(request: Request) {
   const formData = await request.formData();

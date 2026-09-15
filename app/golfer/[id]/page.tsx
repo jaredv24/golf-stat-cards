@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getGolfer } from "@/lib/store";
 import { StatCard } from "@/components/StatCard";
+import { CardCapture } from "@/components/CardCapture";
 
 export const dynamic = "force-dynamic";
 
@@ -13,5 +14,9 @@ export default async function GolferPage({
   const golfer = await getGolfer(id);
   if (!golfer) notFound();
 
-  return <StatCard golfer={golfer} />;
+  return (
+    <CardCapture name={golfer.name}>
+      <StatCard golfer={golfer} />
+    </CardCapture>
+  );
 }

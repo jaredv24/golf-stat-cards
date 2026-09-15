@@ -33,22 +33,6 @@ export async function saveGolfer(input: GolferInput, avatar: Buffer): Promise<Go
   return profile;
 }
 
-export async function listGolfers(): Promise<GolferProfile[]> {
-  const { blobs } = await list({ prefix: "golfers/" });
-  const profileBlobs = blobs.filter((b) => b.pathname.endsWith("/profile.json"));
-
-  const profiles = await Promise.all(
-    profileBlobs.map(async (b) => {
-      const res = await fetch(b.url, { cache: "no-store" });
-      return (await res.json()) as GolferProfile;
-    })
-  );
-
-  return profiles.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
 export async function getGolfer(id: string): Promise<GolferProfile | null> {
   const { blobs } = await list({ prefix: profilePath(id) });
   const match = blobs.find((b) => b.pathname === profilePath(id));
