@@ -15,8 +15,9 @@ export default async function GolferPage({
   if (!golfer) notFound();
 
   return (
-    <CardCapture name={golfer.name}>
+    <div>
       <StatCard golfer={golfer} />
-    </CardCapture>
+      <CardCapture golferId={golfer.id} name={golfer.name} />
+    </div>
   );
 }

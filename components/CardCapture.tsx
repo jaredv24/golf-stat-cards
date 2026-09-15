@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
-import { toPng } from "html-to-image";
+import { useState } from "react";
 
 function slugify(name: string): string {
   return (
@@ -13,46 +12,21 @@ function slugify(name: string): string {
   );
 }
 
-// html-to-image can snapshot before a remote image (the avatar, proxied
-// through /_next/image) has actually finished loading and decoding —
-// "loaded" and "safe to paint" aren't the same moment for an <img>.
-async function waitForImages(container: HTMLElement): Promise<void> {
-  const images = Array.from(container.querySelectorAll("img"));
-  await Promise.all(
-    images.map(async (img) => {
-      if (!img.complete) {
-        await new Promise<void>((resolve) => {
-          img.addEventListener("load", () => resolve(), { once: true });
-          img.addEventListener("error", () => resolve(), { once: true });
-        });
-      }
-      await img.decode?.().catch(() => {});
-    })
-  );
-}
-
-export function CardCapture({ name, children }: { name: string; children: ReactNode }) {
-  const cardRef = useRef<HTMLDivElement>(null);
+export function CardCapture({ golferId, name }: { golferId: string; name: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleDownload() {
-    if (!cardRef.current) return;
     setBusy(true);
     setError(null);
 
     try {
-      await Promise.all([
-        document.fonts.ready.catch(() => {}),
-        waitForImages(cardRef.current),
-      ]);
-      const dataUrl = await toPng(cardRef.current, {
-        pixelRatio: 2,
-        cacheBust: true,
-      });
-
       const fileName = `${slugify(name)}-stat-card.png`;
-      const blob = await (await fetch(dataUrl)).blob();
+      const res = await fetch(`/api/golfers/${golferId}/card`);
+      if (!res.ok) {
+        throw new Error("Couldn't prepare the card image");
+      }
+      const blob = await res.blob();
       const file = new File([blob], fileName, { type: "image/png" });
 
       if (navigator.canShare?.({ files: [file] })) {
@@ -60,10 +34,12 @@ export function CardCapture({ name, children }: { name: string; children: ReactN
         // "Save Image" — the direct path into the Photos app.
         await navigator.share({ files: [file], title: fileName });
       } else {
+        const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        link.href = dataUrl;
+        link.href = url;
         link.download = fileName;
         link.click();
+        URL.revokeObjectURL(url);
       }
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;
@@ -75,8 +51,6 @@ export function CardCapture({ name, children }: { name: string; children: ReactN
 
   return (
     <div>
-      <div ref={cardRef}>{children}</div>
-
       <button
         type="button"
         onClick={handleDownload}

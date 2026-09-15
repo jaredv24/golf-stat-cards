@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import OpenAI from "openai";
 import { toFile } from "openai/uploads";
 
@@ -11,6 +13,8 @@ const BOTTOMS = [
   "olive golf shorts",
 ];
 
+const STYLE_REFERENCE_PATH = path.join(process.cwd(), "lib", "assets", "style-reference.png");
+
 function pick<T>(options: readonly T[]): T {
   return options[Math.floor(Math.random() * options.length)];
 }
@@ -23,25 +27,22 @@ function buildOutfit(favoriteColor: string): string {
 
 function buildPrompt(favoriteColor: string): string {
   return [
-    "Convert this photo into a pixel art video game character in the style",
-    "of Stardew Valley — full body, head to toe, standing and",
-    "front-facing. Charming and stylized, not realistic or photographic:",
-    "clean bold outlines, simple shapes, a warm color palette, visible",
-    "pixels. Keep the rendering style, line weight, and shading approach",
-    "consistent and simple throughout — no mixing of flat cartoon shading",
-    "with realistic/painterly shading.",
-    "Eyes must be simple and clean: open, forward-facing, a small dot or",
-    "oval pupil on a visible eye shape. Not closed, not squinting, not",
-    "drawn as thick lashes or eyeliner.",
-    "Clearly capture this specific person's face shape, hairstyle, and",
-    "facial hair style (beard, mustache, or clean-shaven — match the photo",
-    "exactly), along with their skin tone and expression, so they're",
-    "recognizable. Give everyone a normal, average build and face, not",
-    "heavy, regardless of what the photo shows below the neck. No hat or",
+    "The first image is a photo of a real person. The second image is an",
+    "art style reference. Create a full-body, front-facing, standing",
+    "character illustration of the person from the first image, matching",
+    "the rendering style of the second reference image as closely as",
+    "possible: clean anime/manga-style linework, soft cel shading, large",
+    "detailed expressive eyes with a clear iris and highlight, smooth hair",
+    "rendering with gradient shading.",
+    "Base the character's likeness on the first image: face shape,",
+    "hairstyle, facial hair style (beard, mustache, or clean-shaven —",
+    "match exactly), skin tone, and expression, so they're recognizable.",
+    "Give everyone a normal, average build and face, not heavy,",
+    "regardless of what the photo shows below the neck. No hat or",
     "headwear.",
     `Dress the character in typical golf attire: ${buildOutfit(favoriteColor)}.`,
-    "Simple flat-color background (plain color or a soft green fairway),",
-    "no text, no watermark.",
+    "Simple, softly shaded background (plain color or a soft green",
+    "fairway), no text, no watermark.",
   ].join(" ");
 }
 
@@ -68,11 +69,14 @@ export async function generate8BitAvatarOptions(
   count: number
 ): Promise<Buffer[]> {
   const openai = getClient();
-  const file = await toFile(photo, "photo", { type: mimeType });
+  const [photoFile, styleReferenceFile] = await Promise.all([
+    toFile(photo, "photo", { type: mimeType }),
+    toFile(await readFile(STYLE_REFERENCE_PATH), "style-reference.png", { type: "image/png" }),
+  ]);
 
   const response = await openai.images.edit({
     model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1",
-    image: file,
+    image: [photoFile, styleReferenceFile],
     prompt: buildPrompt(favoriteColor),
     size: "1024x1024",
     // "low" keeps per-avatar cost minimal — this is a fun tournament keepsake,
