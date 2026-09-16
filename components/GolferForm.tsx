@@ -14,6 +14,7 @@ export function GolferForm() {
   const router = useRouter();
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [name, setName] = useState("");
   const [ratings, setRatings] = useState<Record<Skill, number>>(() =>
     Object.fromEntries(SKILLS.map((skill) => [skill, DEFAULT_RATING])) as Record<Skill, number>
   );
@@ -132,6 +133,7 @@ export function GolferForm() {
   }
 
   const submitting = phase === "generating";
+  const isMike = name.trim().toLowerCase() === "mike";
 
   return (
     <form onSubmit={handleGenerate} className="space-y-6">
@@ -173,6 +175,8 @@ export function GolferForm() {
           required
           maxLength={60}
           placeholder="Tiger W."
+          value={name}
+          onChange={(event) => setName(event.target.value)}
           className="w-full rounded border border-hairline bg-page px-3 py-2 text-ink outline-none focus:border-accent"
         />
       </div>
@@ -282,6 +286,25 @@ export function GolferForm() {
             />
           </div>
         ))}
+        {isMike && (
+          <div>
+            <div className="mb-1 flex items-center justify-between text-xs text-ink-secondary">
+              <label htmlFor="anger">Anger (locked)</label>
+              <span className="tabular-nums text-ink">10</span>
+            </div>
+            <input
+              id="anger"
+              name="anger"
+              type="range"
+              min={1}
+              max={10}
+              step={1}
+              value={10}
+              disabled
+              className="w-full accent-[--color-accent] opacity-70"
+            />
+          </div>
+        )}
       </div>
 
       {error && (
