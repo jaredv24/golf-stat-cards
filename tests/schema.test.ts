@@ -57,6 +57,22 @@ describe("overallRating", () => {
     });
     expect(rating).toBe(5.7);
   });
+
+  it("ignores an anger rating even when present", () => {
+    // Same inputs as the first test (rating 7), plus a maxed-out anger stat
+    // that must not move the result.
+    const golfer = {
+      driving: 8,
+      irons: 6,
+      wedges: 7,
+      putting: 9,
+      pressure: 5,
+      strength: 6,
+      handicap: 10,
+      anger: 10,
+    };
+    expect(overallRating(golfer)).toBe(7);
+  });
 });
 
 describe("golferInputSchema", () => {
@@ -128,6 +144,27 @@ describe("golferInputSchema", () => {
 
   it("rejects a handicap outside the plausible range", () => {
     const result = golferInputSchema.safeParse({ ...validInput, handicap: "99" });
+    expect(result.success).toBe(false);
+  });
+
+  it("is valid without an anger rating", () => {
+    const result = golferInputSchema.safeParse(validInput);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.anger).toBeUndefined();
+    }
+  });
+
+  it("accepts an optional anger rating and coerces it", () => {
+    const result = golferInputSchema.safeParse({ ...validInput, anger: "10" });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.anger).toBe(10);
+    }
+  });
+
+  it("rejects an anger rating outside 1-10 when provided", () => {
+    const result = golferInputSchema.safeParse({ ...validInput, anger: "11" });
     expect(result.success).toBe(false);
   });
 });

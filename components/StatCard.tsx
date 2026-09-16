@@ -21,6 +21,7 @@ function CornerRank({ ovr, flipped }: { ovr: number; flipped?: boolean }) {
 
 export function StatCard({ golfer }: { golfer: GolferProfile }) {
   const ovr = overallRating(golfer);
+  const anger = golfer.anger;
 
   return (
     <div className="mx-auto w-full max-w-sm border-4 border-ink bg-surface p-1.5 shadow-[6px_6px_0_0_rgba(0,0,0,0.45)]">
@@ -83,6 +84,21 @@ export function StatCard({ golfer }: { golfer: GolferProfile }) {
               </span>
             </div>
           ))}
+          {anger !== undefined && (
+            <div className="flex items-center gap-3">
+              <span className="w-24 shrink-0 text-[9px] leading-tight text-ink-secondary">
+                Anger
+              </span>
+              <div className="flex flex-1 gap-[2px]">
+                {Array.from({ length: SEGMENTS }, (_, i) => (
+                  <div key={i} className={`h-3 flex-1 ${i < anger ? "bg-accent" : "bg-track"}`} />
+                ))}
+              </div>
+              <span className="w-5 shrink-0 text-right text-xs tabular-nums text-ink">
+                {anger}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>

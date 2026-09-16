@@ -294,7 +294,6 @@ export function GolferForm() {
             </div>
             <input
               id="anger"
-              name="anger"
               type="range"
               min={1}
               max={10}
@@ -303,6 +302,9 @@ export function GolferForm() {
               disabled
               className="w-full accent-[--color-accent] opacity-70"
             />
+            {/* The visible slider above is disabled, so it wouldn't submit —
+                this carries its locked value through instead. */}
+            <input type="hidden" name="anger" value={10} />
           </div>
         )}
       </div>

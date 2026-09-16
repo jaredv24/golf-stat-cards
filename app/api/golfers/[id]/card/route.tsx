@@ -7,7 +7,8 @@ import { SKILLS, SKILL_LABELS, overallRating } from "@/lib/schema";
 export const runtime = "nodejs";
 
 const WIDTH = 800;
-const HEIGHT = 1220;
+const BASE_HEIGHT = 1220;
+const ANGER_ROW_HEIGHT = 40;
 const PAGE_MARGIN = 20;
 const OUTER_BORDER = 8;
 const FRAME_PADDING = 10;
@@ -65,6 +66,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
   const fontData = await readFile(FONT_PATH);
   const ovr = overallRating(golfer);
+  const anger = golfer.anger;
+  const height = anger !== undefined ? BASE_HEIGHT + ANGER_ROW_HEIGHT : BASE_HEIGHT;
   const bioItems = [
     { label: "Age", value: String(golfer.age) },
     { label: "Height", value: golfer.height },
@@ -77,7 +80,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
         style={{
           display: "flex",
           width: WIDTH,
-          height: HEIGHT,
+          height,
           background: COLORS.page,
           padding: PAGE_MARGIN,
           fontFamily: FONT_FAMILY,
@@ -222,6 +225,52 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
                   </div>
                 </div>
               ))}
+              {anger !== undefined && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 14,
+                    marginTop: 16,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      width: 260,
+                      fontSize: 15,
+                      lineHeight: 1.4,
+                      color: COLORS.inkSecondary,
+                    }}
+                  >
+                    Anger
+                  </div>
+                  <div style={{ display: "flex", flex: 1, gap: 2 }}>
+                    {Array.from({ length: SEGMENTS }, (_, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          display: "flex",
+                          flex: 1,
+                          height: 16,
+                          background: i < anger ? COLORS.accent : COLORS.track,
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      width: 28,
+                      justifyContent: "flex-end",
+                      fontSize: 16,
+                      color: COLORS.ink,
+                    }}
+                  >
+                    {anger}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -229,7 +278,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     ),
     {
       width: WIDTH,
-      height: HEIGHT,
+      height,
       fonts: [{ name: FONT_FAMILY, data: fontData, weight: 400, style: "normal" }],
     }
   );

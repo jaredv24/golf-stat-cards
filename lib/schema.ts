@@ -40,6 +40,9 @@ export const golferInputSchema = z.object({
   putting: skillField,
   pressure: skillField,
   strength: skillField,
+  // Not in SKILLS on purpose: a bonus stat shown on the card for a specific
+  // easter egg, deliberately excluded from overallRating.
+  anger: skillField.optional(),
 });
 
 export type GolferInput = z.infer<typeof golferInputSchema>;
